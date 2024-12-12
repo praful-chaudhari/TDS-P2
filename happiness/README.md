@@ -6,52 +6,56 @@ Missing Values: {'Country name': 0, 'year': 0, 'Life Ladder': 0, 'Log GDP per ca
 ## Correlation Matrix
 ![Correlation Matrix](correlation_matrix.png)
 ## Histograms
-![Histogram of year](./year_histogram.png)
+![Histogram of year](./histogram.png)
 ## Boxplots
-![Boxplot of year](./year_boxplot.png)
+![Boxplot of year](./boxplot.png)
 ## Insights
-### 1. Key Findings and Insights from the Dataset
+### Key Findings and Insights from the Dataset
 
-- **Life Ladder**: The average Life Ladder score is approximately 5.48, indicating a moderate level of subjective well-being across the countries sampled. The scores range from a low of 1.281 to a high of 8.019, suggesting significant disparities in perceived life satisfaction.
+1. **Correlation**: The strongest correlations observed are between `Life Ladder` and:
+   - `Log GDP per capita` (0.78)
+   - `Social support` (0.72)
+   - `Healthy life expectancy at birth` (0.71)
+   - `Freedom to make life choices` (0.54)
+   - Conversely, `Perceptions of corruption` has a significant negative correlation with `Life Ladder` (-0.43).
 
-- **Economic Indicators**: The average Log GDP per capita is about 9.40, translating to a per capita GDP of roughly $12,000. The maximum value is around $11.68, which corresponds to approximately $12,800. This suggests that while some countries are economically well off, others lag significantly behind.
+2. **Descriptive Statistics**:
+   - The mean `Life Ladder` score is approximately 5.48, indicating a moderate level of life satisfaction among respondents.
+   - The average `Log GDP per capita` is about 9.4, suggesting a reasonably high economic status in the dataset, but with some countries likely at lower income levels.
+   - `Social support` and `Freedom to make life choices` also reflect positive societal trends, averaging around 0.81 and 0.75, respectively.
 
-- **Social Support**: The mean value of social support is 0.81, indicating that, on average, people feel they have assistance when needed. However, there are notable extremes, with values as low as 0.228.
+3. **Missing Values**: There are significant missing values in several columns, notably:
+   - `Generosity` (81 missing values)
+   - `Perceptions of corruption` (125 missing values)
+   - This may affect the overall analysis and could potentially introduce bias if not handled appropriately.
 
-- **Healthy Life Expectancy**: The average healthy life expectancy at birth is 63.40 years, with a wide range (6.72 to 74.6 years), indicating differing healthcare quality and lifestyle factors across countries.
+### Patterns and Trends Observed in the Data
 
-- **Freedom and Corruption**: The Freedom to make life choices averages at 0.75, while perceptions of corruption average 0.744, indicating a moderate level of perceived freedom and corruption across the dataset.
+- **Temporal Trends**: The dataset spans from 2005 to 2023, with the mean year being around 2015. Analyzing changes over time could reveal how life satisfaction and economic indicators have evolved.
+- **Geographical Patterns**: It would be beneficial to categorize countries by region to analyze regional trends in happiness, economic status, and social support. Countries in higher-income brackets generally show higher `Life Ladder` scores.
 
-### 2. Patterns and Trends Observed in the Data
+### Potential Anomalies or Outliers and Their Implications
 
-- **Positive vs. Negative Affect**: There’s a noticeable difference between positive affect (average 0.65) and negative affect (average 0.27), suggesting that people generally experience more positive feelings than negative ones.
+- **Outliers**: 
+   - `Life Ladder` has 2 outliers, and `Log GDP per capita` has 1. The presence of outliers in these critical metrics could skew mean values and correlations, suggesting that further investigation into these specific entries may be warranted.
+   - `Perceptions of corruption` has a significant number of outliers (194), indicating that some countries perceive corruption levels very differently from others. This could suggest systemic issues in governance or public trust in institutions.
 
-- **Correlations**: Strong correlations are observed between Life Ladder and Log GDP per capita (0.78), Social support (0.72), and Healthy life expectancy (0.71), indicating that economic prosperity, social support, and health are closely linked to subjective well-being.
+- **Implications**: The presence of outliers or anomalies may indicate unique circumstances in specific countries that could be investigated further. For instance, extremely low or high `Life Ladder` scores could be associated with socio-political factors or major events (e.g., economic crises, natural disasters).
 
-- **Negative Correlations**: Life Ladder has a negative correlation with Perceptions of corruption (-0.43), indicating that higher corruption perceptions are associated with lower life satisfaction.
+### Suggestions for Further Analysis or Steps to Take Based on the Data
 
-### 3. Potential Anomalies or Outliers and Their Implications
+1. **Time-Series Analysis**: Conduct time-series analysis to observe trends in `Life Ladder`, `Log GDP per capita`, and other variables over the years. This could reveal how economic and social factors influence happiness over time.
 
-- **Outliers**: There are several outliers, particularly in the Healthy Life Expectancy (20 outliers) and Social Support (48 outliers) columns. These may indicate extreme cases where certain countries have either exceptionally high or low values compared to the overall dataset.
+2. **Regional Comparisons**: Expand the analysis to include a regional breakdown of the data to assess differences in quality of life indicators among various regions and their socio-economic contexts.
 
-- **Implications**: Outliers could skew average values and indicate specific countries that may require focused policy interventions or further investigation to understand the underlying causes of their extreme values.
+3. **Handle Missing Data**: Implement strategies for the missing data, such as imputation, to ensure that the dataset can be analyzed without significant gaps that could skew results.
 
-### 4. Suggestions for Further Analysis or Steps to Take Based on the Data
+4. **Investigate Outliers**: Conduct a deeper investigation into the outliers identified, particularly in variables related to `Life Ladder` and `Perceptions of corruption`, to understand the contextual factors influencing these values.
 
-- **Deeper Analysis of Outliers**: Investigate the countries with extreme values in the dataset to understand the context behind their scores. This could provide insights into best practices or areas of concern.
+5. **Multivariate Analysis**: Explore relationships among multiple variables through multivariate regression analysis to assess how different factors collectively influence happiness and life satisfaction.
 
-- **Temporal Analysis**: Explore the trends over the years to identify whether the indicators have improved or worsened over time. This could help in understanding the effectiveness of policies aimed at improving life satisfaction and economic conditions.
+### Additional Observations or Recommendations
 
-- **Regional Analysis**: Conduct a regional analysis to see if certain geographic areas show consistent patterns in life satisfaction, GDP, and social support, which could inform targeted interventions.
-
-### 5. Additional Observations or Recommendations
-
-- **Addressing Missing Values**: Several columns have notable missing values, especially in Generosity and Perceptions of corruption. Consider employing imputation techniques or analyzing the impact of these missing values on overall findings.
-
-- **Policy Implications**: The strong correlation between life satisfaction and economic indicators suggests that policies aimed at improving economic conditions (e.g., job creation, education, healthcare) can potentially enhance subjective well-being.
-
-- **Public Awareness Campaigns**: Given the correlation between perceptions of corruption and life satisfaction, initiatives aimed at improving transparency and reducing corruption may help improve public sentiment and well-being.
-
-- **Longitudinal Studies**: Initiating longitudinal studies could provide more dynamic insights into how changes in GDP, social support, and other factors affect life satisfaction over time.
-
-By following these recommendations and further analyzing the dataset, stakeholders can develop a more profound understanding of the factors that contribute to or detract from life satisfaction across different countries.
+- **Data Quality**: Ensure that the quality of data is maintained and that discrepancies are addressed. This is crucial for accurate analysis and conclusions.
+- **Consider External Factors**: Incorporate external factors such as political stability, healthcare quality, and educational access in future analyses to provide a more comprehensive view of the determinants of happiness.
+- **Engage with Policy Makers**: The insights gained from the analysis can be valuable for policymakers focusing on improving societal well-being and addressing corruption.
