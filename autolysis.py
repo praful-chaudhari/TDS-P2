@@ -176,9 +176,11 @@ class DataAnalyzer:
         }
         response = requests.post(self.api_url, headers=headers, json=data)
         if response.status_code == 200:
-            return response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+            response_json = response.json()
+            return response_json.get("choices", [{}])[0].get("message", {}).get("content", "")
         else:
-            raise ValueError(f"Error: {response.status_code} - {response.text}")
+            print(f"Error: {response.status_code} - {response.text}")
+            return ""
 
     def generate_narrative(self, insights):
         """
