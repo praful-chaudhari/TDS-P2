@@ -69,14 +69,12 @@ def encode_image_to_base64(filepath):
     return base64_image
 
 def analyze_outliers(data):
-    # Detect outliers in numeric columns using the IQR method.
     outliers = {}
     numeric_data = data.select_dtypes(include=[np.number])
     for column in numeric_data.columns:
         Q1 = data[column].quantile(0.25)
         Q3 = data[column].quantile(0.75)
         IQR = Q3 - Q1
-        # Handle the boolean arrays correctly
         outlier_condition = (data[column] < (Q1 - 1.5 * IQR)) | (data[column] > (Q3 + 1.5 * IQR))
         outliers[column] = data[outlier_condition].shape[0]
     return outliers
@@ -91,30 +89,34 @@ def analyze_standard_deviation(data):
     std_devs = numeric_data.std()
     return std_devs.to_dict()
 
-def generate_prompt(data, chart_base64):
+def get_example_values(data, num_examples=3):
+    return data.head(num_examples).to_dict()
+
+def generate_prompt(data, chart_base64, example_values):
     numeric_data = data.select_dtypes(include=[np.number])
     correlation_matrix = analyze_correlation(data)
 
     prompt = f"""
-    Please analyze the following dataset and provide comprehensive insights:
+    Analyze this dataset and provide insights.
 
     - Columns: {data.columns.tolist()}
     - Data Types: {data.dtypes.to_dict()}
-    - Missing Values per Column: {analyze_missing_values(data).to_dict()}
-    - Summary Statistics for Numeric Columns: {numeric_data.describe().to_dict() if not numeric_data.empty else "Not available"}
-    - Correlation Matrix (if applicable): {correlation_matrix.to_dict() if correlation_matrix is not None else "Not available"}
-    - Histograms (Base64): {chart_base64['histogram']}
-    - Boxplots (Base64): {chart_base64['boxplot']}
-    - Outliers per Column: {analyze_outliers(data)}
-    - Variance per Column: {analyze_variance(data)}
-    - Standard Deviation per Column: {analyze_standard_deviation(data)}
+    - Missing Values: {analyze_missing_values(data).to_dict()}
+    - Summary Stats: {numeric_data.describe().to_dict() if not numeric_data.empty else "Not available"}
+    - Correlation Matrix: {correlation_matrix.to_dict() if correlation_matrix is not None else "Not available"}
+    - Example Values: {example_values}
 
-    Based on the above information, please provide the following:
-    1. Key findings and insights from the dataset.
-    2. Patterns and trends observed in the data.
-    3. Potential anomalies or outliers and their implications.
-    4. Suggestions for further analysis or steps to take based on the data.
-    5. Any additional observations or recommendations.
+    Visualizations (base64, detail: low):
+    - Histogram: {chart_base64['histogram']}
+    - Boxplot: {chart_base64['boxplot']}
+    - Correlation Matrix: {chart_base64['correlation_matrix']}
+
+    Provide:
+    1. Key findings.
+    2. Patterns and trends.
+    3. Anomalies or outliers.
+    4. Suggestions for further analysis.
+    5. Additional observations.
     """
     return prompt
 
@@ -128,12 +130,18 @@ def fetch_llm_response(prompt, api_token, api_url, temperature=0.7):
         "messages": [{"role": "user", "content": prompt}],
         "temperature": temperature,
     }
-    response = requests.post(api_url, headers=headers, json=data)
-    if response.status_code == 200:
+
+    try:
+        response = requests.post(api_url, headers=headers, json=data)
+        response.raise_for_status()
         response_json = response.json()
         return response_json.get("choices", [{}])[0].get("message", {}).get("content", "")
-    else:
-        print(f"Error: {response.status_code} - {response.text}")
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTPError occurred: {e}")
+        error_message = response.json().get("error", {}).get("message", "No error message available")
+        error_details = response.json()
+        print(f"Error details: {error_message}")
+        print(error_details)
         return ""
 
 def generate_narrative(data, insights):
@@ -173,14 +181,18 @@ def analyze(filename, api_token, api_url):
         "correlation_matrix": encode_image_to_base64("correlation_matrix.png"),
     }
 
+    example_values = get_example_values(data)
+
     analyze_outliers(data)
     analyze_variance(data)
     analyze_standard_deviation(data)
-    prompt = generate_prompt(data, chart_base64)
+    prompt = generate_prompt(data, chart_base64, example_values)
+    
     insights = fetch_llm_response(prompt, api_token, api_url)
-    print("LLM Analysis:")
-    print(insights)
-    generate_narrative(data, insights)
+    if insights:
+        print("LLM Analysis:")
+        print(insights)
+        generate_narrative(data, insights)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
